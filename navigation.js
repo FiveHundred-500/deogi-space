@@ -39,7 +39,17 @@ const FlightView={
   for(const p of this.bodies())if(this.distance(p)<p.radius+p.zone&&!record(p.id).visited){record(p.id).visited=true;save();this.notify('✦ '+p.name+' 식별 완료 · 관측 신호 확보',time);updateUI();}
   AsteroidBelt.tick(time);
  },
- labels(){const p=current(),d=this.distance(),time=performance.now();$('flightStatus').textContent=paused?'비행 일시정지':this.mode==='map'?'항법 지도 · 정지':inRange?'관측 구역 · '+bodyName(observationBody):'공전면 자유 비행';$('distance').textContent=d.toFixed(3)+' AU · '+Math.abs(this.speed).toFixed(3)+' AU/s';$('equipmentStatus').innerHTML=inRange?'<i class="live-dot"></i> 관측 대상 · '+bodyName(observationBody):'가까운 천체가 없어요';$('flightHint').textContent=inRange?'관측 대상 '+bodyName(observationBody)+' · 목적지 '+bearing(p)+'°':this.mode==='map'?'목적지를 정한 뒤 조종석에서 비행하세요.':'목적지 '+bearing(p)+'° · 현재 '+headingDegrees(this.yaw)+'° · ←→ 회전';$('observeBtn').hidden=!inRange;$('pauseBtn').textContent=paused?'▶':'Ⅱ';$('pauseBtn').setAttribute('aria-label',paused?'비행 재개':'비행 일시정지');if($('flightAlert')){$('flightAlert').textContent=this.warning||(time<this.eventUntil?this.event:'');$('flightAlert').classList.toggle('danger',!!this.warning);}},
+ labels(){const p=current(),q=observationBody,d=this.distance(),time=performance.now();
+  $('flightStatus').textContent=paused?'비행 일시정지':this.mode==='map'?'항법 지도 · 정지':q?'관측 구역 · '+bodyName(q):'공전면 자유 비행';
+  $('targetName').textContent=q?bodyName(q):'관측 대상 없음';
+  $('observationLabel').textContent=q?'현재 관측 대상':'관측 신호 대기';
+  $('flightHint').textContent=q?'관측 거리 안 · 장비 사용 가능':'천체에 가까이 다가가세요';
+  $('navigationTarget').textContent='항법 목적지 · '+bodyName(p);
+  $('navigationDetails').textContent=bearing(p)+'° · 남은 거리 '+d.toFixed(3)+' AU';
+  $('distance').textContent='현재 방향 '+headingDegrees(this.yaw)+'° · 속도 '+Math.abs(this.speed).toFixed(3)+' AU/s';
+  $('equipmentStatus').innerHTML=q?'<i class="live-dot"></i> 관측 대상 · '+bodyName(q):'가까운 천체가 없어요';
+  $('observeBtn').hidden=!q;$('observeBtn').textContent=q?bodyName(q)+' 관측 장비':'관측 장비';
+  $('pauseBtn').textContent=paused?'▶':'Ⅱ';$('pauseBtn').setAttribute('aria-label',paused?'비행 재개':'비행 일시정지');if($('flightAlert')){$('flightAlert').textContent=this.warning||(time<this.eventUntil?this.event:'');$('flightAlert').classList.toggle('danger',!!this.warning);}},
  mapClick(x,y){if(this.mode!=='map')return;const found=this.mapPoints.filter(p=>p.i>=0&&Math.hypot(p.sx-x,p.sy-y)<20).sort((a,b)=>Math.hypot(a.sx-x,a.sy-y)-Math.hypot(b.sx-x,b.sy-y))[0];if(found)selectPlanet(found.i);},
  render(ctx,w,h,time){if(this.mode==='map'){this.renderMap(ctx,w,h);return;}
   const horizon=h*.44,focal=w*.72;ctx.fillStyle='#02050c';ctx.fillRect(0,0,w,h);
@@ -48,9 +58,9 @@ const FlightView={
   for(let i=0;i<1400;i++){const hash=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};const a=hash(i+1)*Math.PI*2,rel=this.wrap(a-this.yaw);if(Math.abs(rel)>1.1)continue;const elevation=(hash(i+1703)-.5)*1.2,x=w/2+Math.tan(rel)*focal,y=horizon+elevation*h; if(y<0||y>h-155)continue;const size=i%29===0?1.8:i%7===0?1.1:.65;ctx.fillStyle=i%19===0?'#ffe8b5':i%3?'#a8cae4aa':'#f5f7ff';ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();if(size>1.5){ctx.globalAlpha=.23;ctx.fillRect(x-4,y-.5,8,1);ctx.fillRect(x-.5,y-4,1,8);ctx.globalAlpha=1;}}
   const objects=this.bodies().map(p=>({...p,d:this.distance(p),rel:this.wrap(Math.atan2(p.y-ship.y,p.x-ship.x)-this.yaw)})).sort((a,b)=>b.d-a.d);
   for(const p of objects){if(Math.abs(p.rel)>1.1)continue;const x=w/2+Math.tan(p.rel)*focal,size=Math.min(h*.58,Math.max(p.id==='sun'?8:2,2*p.radius/Math.max(p.d,.001)*focal));if(p.id==='sun'){const g=ctx.createRadialGradient(x,horizon,0,x,horizon,size*1.6);g.addColorStop(0,'#fffbe4');g.addColorStop(.26,'#ffd77c');g.addColorStop(.36,'#e8953480');g.addColorStop(1,'#d7740000');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,horizon,size*1.6,0,Math.PI*2);ctx.fill();}else if(p.artificial){Observatory.paint(ctx,p,x,horizon,size);}else if(OrbitalView.config[p.id]){OrbitalView.paint(ctx,p,x,horizon,size);}else {ctx.fillStyle='#02050c';ctx.beginPath();ctx.arc(x,horizon,size/2,0,Math.PI*2);ctx.fill();PhotoLibrary.paint(ctx,p.id,x,horizon,size/(PHOTOS[p.id]?.bodyFraction||1));}
-   if(p.id===current().id){const r=Math.max(20,size/2+10);ctx.strokeStyle='#9effd499';ctx.setLineDash([5,7]);ctx.strokeRect(x-r,horizon-r,r*2,r*2);ctx.setLineDash([]);ctx.fillStyle='#c0ffe8';ctx.textAlign='center';ctx.font='11px sans-serif';ctx.fillText(bodyName(p)+' · '+p.d.toFixed(3)+' AU',Math.max(70,Math.min(w-70,x)),horizon+r+19);}
+   if(p.id===current().id){const r=Math.max(20,size/2+10);ctx.strokeStyle='#9effd499';ctx.setLineDash([5,7]);ctx.strokeRect(x-r,horizon-r,r*2,r*2);ctx.setLineDash([]);ctx.fillStyle='#c0ffe8';ctx.textAlign='center';ctx.font='11px sans-serif';ctx.fillText('목적지 · '+bodyName(p)+' · '+p.d.toFixed(3)+' AU',Math.max(70,Math.min(w-70,x)),horizon+r+19);}
   }
-  const p=current(),rel=this.wrap(Math.atan2(p.y-ship.y,p.x-ship.x)-this.yaw);if(Math.abs(rel)>.85){ctx.fillStyle='#a4f2d6';ctx.textAlign=rel<0?'left':'right';ctx.font='12px sans-serif';ctx.fillText((rel<0?'◀ ':'')+bodyName(p)+(rel>0?' ▶':''),rel<0?40:w-40,horizon);}
+  const p=current(),rel=this.wrap(Math.atan2(p.y-ship.y,p.x-ship.x)-this.yaw);if(Math.abs(rel)>.85){ctx.fillStyle='#a4f2d6';ctx.textAlign=rel<0?'left':'right';ctx.font='12px sans-serif';ctx.fillText((rel<0?'◀ ':'')+'목적지 · '+bodyName(p)+(rel>0?' ▶':''),rel<0?40:w-40,horizon);}
   AsteroidBelt.draw(ctx,w,h);
   // Fixed horizon and heading ticks make coplanar turns easy to read.
   ctx.strokeStyle='#9bc5ca55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w/2-17,horizon);ctx.lineTo(w/2-6,horizon);ctx.moveTo(w/2+6,horizon);ctx.lineTo(w/2+17,horizon);ctx.moveTo(w/2,horizon-10);ctx.lineTo(w/2,horizon+10);ctx.stroke();

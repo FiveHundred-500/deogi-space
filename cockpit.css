@@ -17,3 +17,8 @@ html,body.immersive{width:100%;height:100%;overflow:hidden}.immersive main{paddi
 .observatory-specs{display:grid;grid-template-columns:100px 1fr;gap:12px;margin:24px 0}.observatory-specs dt{color:#94a8bc}.observatory-specs dd{margin:0;color:#e4eff8}
 
 .moon-destination{margin-left:20px;width:calc(100% - 20px)}.moon-destination small{display:block;font-size:10px;color:#9cabbc;margin-top:3px}
+/* Keep the instrument target prominent and the route separately labelled. */
+.immersive .flight-target{padding:14px 18px;border-radius:12px;background:linear-gradient(100deg,#06131ee8,#06131e70);border-left:2px solid #8af3ce;max-width:52vw;gap:18px}
+.immersive #observationLabel{color:#a5f4d7;letter-spacing:1px}.immersive .flight-target h2{color:#e4fff5}.immersive .flight-target p{margin:3px 0;color:#aacbc5}
+.navigation-summary{border-top:1px solid #7899b23b;margin-top:10px;padding-top:9px;color:#acbccc;font-size:11px;line-height:1.6}.navigation-summary>span{display:block}.navigation-summary>small{display:block;font-size:10px;letter-spacing:0;color:#8c9fb0}
+@media(max-width:750px){.immersive .flight-target{left:20px;right:20px;max-width:none;padding:10px 12px;gap:8px}.immersive .flight-target h2{font-size:22px!important}.immersive .flight-target .navigation-summary{font-size:10px;margin-top:6px;padding-top:5px}.immersive .flight-target .primary{padding:10px;font-size:11px}.navigation-summary>small{font-size:9px}}

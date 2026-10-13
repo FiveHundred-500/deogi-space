@@ -8,7 +8,7 @@ progress.earth={visited:true};
 let observationBody=null,lastObservationId=null,focusBody=null,selected=2,paused=false,inRange=true,lastRange=true,angle=-.8,modalTimer,toastTimer;
 const keys=new Set(), ship={x:652,y:527};
 const angles=[-2.9,-1.5,.55,2.8,-2.15,-.5,1.75,.18];
-PLANETS.forEach((p,i)=>{p.r=p.au;p.x=Math.cos(angles[i])*p.au;p.y=Math.sin(angles[i])*p.au;p.radius=[.006,.009,.009,.007,.035,.030,.022,.021][i];p.zone=.055+p.radius;});
+PLANETS.forEach((p,i)=>{p.r=p.au;p.x=Math.cos(angles[i])*p.au;p.y=Math.sin(angles[i])*p.au;p.radius=[.006,.009,.009,.007,.035,.030,.022,.021][i];p.zone=.16+6*p.radius;});
 ship.x=PLANETS[2].x+.045;ship.y=PLANETS[2].y+.028;
 const current=()=>focusBody||PLANETS[selected],record=(id=current().id)=>progress[id]||(progress[id]={});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(progress));}catch{storageOK=false;}}
@@ -21,7 +21,7 @@ function updateUI(){const p=current(),known=!!record(p.id).visited;
  $('destinations').innerHTML=PLANETS.map((p,i)=>'<button class="destination '+(current()===p?'selected':'')+' '+(record(p.id).visited?'known':'unknown')+'" data-planet="'+i+'" aria-pressed="'+(current()===p)+'">'+(record(p.id).visited?'<span class="orb">'+PhotoLibrary.markup(p.id,p.name)+'</span>':'<span class="unseen-orbit" aria-hidden="true">·</span>')+'<span class="name">'+p.name+'</span></button>').join('')+'<button class="destination sun-destination" id="sunDestination">☀ 태양</button>';
  $('sunDestination').onclick=()=>selectBody(SUN);
  document.querySelector('[data-planet="2"]').insertAdjacentHTML('afterend','<button class="destination moon-destination '+(current()===MOON?'selected ':'')+(record('moon').visited?'known':'unknown')+'" id="moonDestination" aria-pressed="'+(current()===MOON)+'">'+(record('moon').visited?'<span class="orb">'+PhotoLibrary.markup('moon','달')+'</span>':'<span class="unseen-orbit" aria-hidden="true">·</span>')+'<span class="name">달 <small>지구의 위성</small></span></button>');$('moonDestination').onclick=()=>selectBody(MOON);
- $('targetName').innerHTML=bodyName(p)+' <span>'+(p.secret&&!known?'SIGNAL':p.en)+'</span>';const q=observationBody;
+ const q=observationBody;
  $('planetTitle').textContent=q?bodyName(q):'관측 대상 없음';$('planetType').textContent=q?q.type:'관측 대기';$('planetTagline').textContent=q?q.tagline:'천체의 관측 거리 안으로 이동하세요.';$('previewOrb').innerHTML=q?PhotoLibrary.markup(q.id,q.name):'<span class="unseen-orbit">·</span>';
  $('equipment').innerHTML=EQUIPMENT.filter(t=>!q||!q.tools||q.tools.includes(t.id)).map(t=>'<button class="tool" data-tool="'+t.id+'" '+(!q?'disabled':'')+'><span class="tool-symbol">'+t.icon+'</span><span><strong>'+(q?.artificial&&t.id==='profile'?'망원경 자료':t.name)+'</strong><small>'+(q?.artificial?(t.id==='profile'?'거울 · 관측 파장 · 궤도':'형태 · 장비 · 특징 관찰'):t.sub)+'</small></span><span class="arrow">↗</span></button>').join('');updateFlightLabels();}
 function updateFlightLabels(){FlightView.labels();}
