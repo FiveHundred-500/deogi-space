@@ -1,0 +1,18 @@
+Planet texture maps: Solar System Scope / INOVE
+https://www.solarsystemscope.com/textures/
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+
+Downloaded 2026-10-13. Original 2K JPEG files retained without modification.
+Runtime presentation adapts these equirectangular maps by sampling them onto
+spherical planets, changing viewpoint and adding simplified solar illumination.
+The source maps use NASA imagery/elevation data, adjusted colors and fictional
+terrain to fill unmapped gaps. These renders are models, not new mission photos.
+Venus uses the atmosphere map. Earth uses the day map (no live cloud/weather data).
+
+Obliquities: NASA Planetary Fact Sheet (degrees)
+https://nssdc.gsfc.nasa.gov/planetary/factsheet/
+Mercury 0.034; Venus 177.4; Earth 23.4; Mars 25.2;
+Jupiter 3.1; Saturn 26.7; Uranus 97.8; Neptune 28.3.
+All orbital inclinations are zero in this game. Pole azimuth and texture rotation
+are illustrative fixed values, not actual date-dependent orientation data.

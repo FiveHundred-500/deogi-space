@@ -1,0 +1,43 @@
+{
+  "sun": {
+    "src": "assets/sun.jpg",
+    "source": "https://sdo.gsfc.nasa.gov/data/channels.php",
+    "original": "https://sdo.gsfc.nasa.gov/assets/img/browse/2026/07/30/20260730_000000_1024_HMIIC.jpg",
+    "credit": "NASA/SDO/HMI",
+    "note": "SDO/HMI의 2026년 7월 30일 가시광 연속광 관측 사진. 표면의 밝기를 주황색으로 표현한 영상이며, 어두운 점은 흑점이다. 웹 표시용 크기 축소.",
+    "bodyFraction": 0.917,
+    "centerX": 0.5,
+    "centerY": 0.5
+  },
+  "pluto": {
+    "src": "assets/pluto.jpg",
+    "source": "https://science.nasa.gov/resource/pluto-in-true-color/",
+    "original": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/1/PIA19857-1.jpg?crop=faces%2Cfocalpoint&fit=clip&h=1080&w=1920",
+    "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Southwest Research Institute",
+    "note": "뉴허라이즌스 LORRI 사진과 Ralph 색상 자료를 합성한 자연색에 가까운 명왕성 전경. 오른쪽 아래 가장자리는 고해상도 색상 자료가 부족하다. 검은 여백을 잘라 웹 표시용 크기로 조정.",
+    "bodyFraction": 0.878,
+    "centerX": 0.5,
+    "centerY": 0.5
+  },
+  "comet": {
+    "src": "assets/comet.jpg",
+    "source": "https://www.esa.int/ESA_Multimedia/Images/2014/08/Comet_on_3_August_2014",
+    "original": "https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2014/08/comet_on_3_august_2014/14707891-1-eng-GB/Comet_on_3_August_2014_pillars.png",
+    "credit": "ESA/Rosetta/MPS for OSIRIS Team MPS/UPD/LAM/IAA/SSO/INTA/UPM/DASP/IDA",
+    "note": "로제타 OSIRIS가 2014년 8월 3일 약285km 거리에서 촬영한 67P 혜성의 핵. 흑백 관측 사진을 크기 축소하고 검은 여백을 추가했다.",
+    "license": "https://www.esa.int/ESA_Multimedia/Terms_and_conditions_of_use_of_images_and_videos_available_on_the_esa_website",
+    "bodyFraction": 0.91,
+    "centerX": 0.505,
+    "centerY": 0.486
+  },
+  "charon": {
+    "src": "assets/charon.jpg",
+    "source": "https://science.nasa.gov/resource/charon-in-enhanced-color/",
+    "original": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/PIA19968-1.jpg?crop=faces%2Cfocalpoint&fit=clip&h=2000&w=2000",
+    "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Southwest Research Institute",
+    "note": "뉴허라이즌스가 2015년 7월 14일 촬영한 카론. 파랑·빨강·적외선 자료를 합성하고 표면 차이가 잘 보이도록 색을 강조했다. 웹 표시용 크기 축소.",
+    "bodyFraction": 0.835,
+    "centerX": 0.5,
+    "centerY": 0.486
+  }
+}
