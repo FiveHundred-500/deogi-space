@@ -5,14 +5,15 @@ const WEBB={id:'webb',name:'제임스 웹 우주망원경',en:'WEBB',type:'우�
 ENCOUNTERS.push(HUBBLE,WEBB);
 Object.assign(PHOTOS,{
  hubble:{src:'assets/hubble.webp',source:HUBBLE.source,credit:'NASA',note:'지구 궤도에서 촬영한 허블 우주망원경의 실제 사진.',bodyFraction:1},
- webb:{src:'assets/webb.png',source:'https://science.nasa.gov/asset/webb/completed-optical-telescope-element/',credit:'NASA',note:'발사 전 클린룸에서 촬영한 광학 망원경부의 실제 사진. 우주에서 촬영한 모습은 아니에요.',bodyFraction:1}
+ webb:{src:'webb-photo.jpg',source:'https://www.nasa.gov/missions/nasas-webb-sunshield-successfully-unfolds-and-tensions-in-final-tests/',credit:'NASA/Chris Gunn',note:'발사 전 차양 전개 시험 중 촬영한 실제 사진. 우주에서 촬영한 모습은 아니에요.',bodyFraction:1}
 });
 const Observatory={
- profile(p){openModal(p.name+' · 탐사 자료','<div class="body-profile"><div class="profile-visual">'+PhotoLibrary.markup(p.id,p.name)+'<p class="photo-credit">'+PhotoLibrary.credit(p.id)+'</p></div><section><span class="eyebrow">SPACE OBSERVATORY</span><h3>'+p.tagline+'</h3><dl class="observatory-specs"><dt>주거울 지름</dt><dd>'+p.mirror+'</dd><dt>관측하는 빛</dt><dd>'+p.wavelength+'</dd><dt>실제 궤도</dt><dd>'+p.orbit+'</dd></dl><a href="'+p.source+'" target="_blank" rel="noopener">NASA 탐사 자료 ↗</a></section></div><details class="science-details"><summary>망원경과 배치 모형</summary><p>조종석의 망원경은 형태를 단순화한 모형이에요. 허블은 지구 주변, 웹은 태양 반대쪽이라는 관계를 보여 주되, 발견할 수 있도록 지구와의 거리·크기·접근 구역을 확대했어요. 실제 축척이나 현재 위치가 아니에요.</p></details>','OBSERVATORY ARCHIVE');},
- paint(ctx,p,x,y,size){const scale=Math.max(5,Math.min(150,size))/100;ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.rotate(p.id==='hubble'?-.3:.12);ctx.strokeStyle='#8aa8b9';ctx.lineWidth=1.4;
-  if(p.id==='hubble'){ctx.fillStyle='#284f80';for(const side of [-1,1]){ctx.fillRect(side<0?-78:24,-20,54,40);ctx.strokeRect(side<0?-78:24,-20,54,40);for(let i=1;i<6;i++){const xx=(side<0?-78:24)+i*9;ctx.beginPath();ctx.moveTo(xx,-20);ctx.lineTo(xx,20);ctx.stroke();}}const metal=ctx.createLinearGradient(-18,0,18,0);metal.addColorStop(0,'#475663');metal.addColorStop(.5,'#dae6e8');metal.addColorStop(1,'#687887');ctx.fillStyle=metal;ctx.fillRect(-18,-52,36,100);ctx.strokeRect(-18,-52,36,100);ctx.fillStyle='#0c1621';ctx.beginPath();ctx.ellipse(0,-52,18,7,0,0,Math.PI*2);ctx.fill();}
-  else{for(let i=4;i>=0;i--){ctx.fillStyle=['#b7afc7','#7e7b98','#b3aabf','#696779','#a7a8b4'][i];ctx.beginPath();ctx.moveTo(-82,24+i*4);ctx.lineTo(-5,60+i*4);ctx.lineTo(81,26+i*4);ctx.lineTo(6,-4+i*4);ctx.closePath();ctx.fill();ctx.stroke();}for(let q=-2;q<=2;q++)for(let r=-2;r<=2;r++){if(Math.abs(q+r)>2||(q===0&&r===0))continue;const hx=17.4*(q+r/2),hy=15*r-15;ctx.fillStyle=(q+r)%2?'#dfb657':'#ae822d';ctx.strokeStyle='#4a3c27';ctx.beginPath();for(let k=0;k<6;k++){const a=(k*60+30)*Math.PI/180;const xx=hx+9.8*Math.cos(a),yy=hy+9.8*Math.sin(a);k?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.closePath();ctx.fill();ctx.stroke();}ctx.strokeStyle='#d1c9b2';ctx.beginPath();ctx.moveTo(-34,-36);ctx.lineTo(0,-62);ctx.lineTo(34,-36);ctx.moveTo(0,-62);ctx.lineTo(0,18);ctx.stroke();}
-  ctx.restore();}
+ profile(p){openModal(p.name+' · 탐사 자료','<div class="body-profile"><div class="profile-visual">'+PhotoLibrary.markup(p.id,p.name)+'<p class="photo-credit">'+PhotoLibrary.credit(p.id)+'</p></div><section><span class="eyebrow">SPACE OBSERVATORY</span><h3>'+p.tagline+'</h3><dl class="observatory-specs"><dt>주거울 지름</dt><dd>'+p.mirror+'</dd><dt>관측하는 빛</dt><dd>'+p.wavelength+'</dd><dt>실제 궤도</dt><dd>'+p.orbit+'</dd></dl><a href="'+p.source+'" target="_blank" rel="noopener">NASA 탐사 자료 ↗</a></section></div><details class="science-details"><summary>망원경과 배치 모형</summary><p>조종석의 기체 이미지는 NASA 사진을 바탕으로 배경을 제거·보정한 탐사용 이미지예요. 아래 사진은 원본 자료예요. 허블은 지구 주변, 웹은 태양 반대쪽이라는 관계를 보여 주되, 발견할 수 있도록 지구와의 거리·크기·접근 구역을 확대했어요. 실제 축척이나 현재 위치가 아니에요.</p></details>','OBSERVATORY ARCHIVE');},
+ sprites:new Map(),
+ paint(ctx,p,x,y,size){
+  if(!this.sprites.has(p.id)){const image=new Image();image.src=p.id+'-flight.png';this.sprites.set(p.id,image);}const img=this.sprites.get(p.id);if(!img.complete||!img.naturalWidth)return;
+  const width=Math.max(3,size*1.5),height=width*img.naturalHeight/img.naturalWidth;ctx.save();ctx.drawImage(img,x-width/2,y-height/2,width,height);ctx.restore();
+ }
 };
 const AsteroidBelt={
  rocks:[],inside:false,lastSide:null,entrySide:null,near:null,approaching:false,

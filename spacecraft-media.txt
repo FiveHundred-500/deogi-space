@@ -1,0 +1,26 @@
+덕이 탐사대 — 기체 이미지와 보이저 인사 자료
+
+조종석 이미지: NASA 원본 사진을 내장 ImageGen 편집 도구로 배경 제거·보정한 탐사용 이미지.
+자료창 이미지는 NASA 원본 사진이며, 조종석 이미지와 구분해 표시한다.
+
+허블 원본: https://science.nasa.gov/mission/hubble/overview/about-hubble/
+출력: hubble-flight.png
+편집 프롬프트: Use case: background-extraction. Asset: transparent spacecraft game sprite. Hubble Space Telescope. Extract only the complete silver telescope, solar panels, antenna and all its fine structure from this photograph. Remove Earth, stars and black background. Preserve the photographic details, proportions and original orientation exactly. Reframe tightly around the spacecraft with a small 5% transparent margin. Do not add any objects or drawing.
+
+제임스웹 원본: https://www.nasa.gov/missions/nasas-webb-sunshield-successfully-unfolds-and-tensions-in-final-tests/
+Credit: NASA/Chris Gunn. finalsunshielddeploy6gunn.jpg
+출력: webb-flight.png
+편집 프롬프트: Use case: background-extraction. Asset: transparent spacecraft game sprite. James Webb Space Telescope. Extract ONLY the actual spacecraft: the gold segmented primary mirror and secondary-mirror support, five-layer silver sunshield and central spacecraft bus. Remove cleanroom walls, cranes, floor, people, yellow handling scaffold, test equipment and all background to actual alpha transparency. Preserve original photographic shapes, colors and angle. Keep the complete sunshield and mirror fully visible with 5% margin. No rectangular backdrop, no text, no glow, no invented extra panels. This is an in-game spacecraft cutout from a real photograph, not an illustration.
+
+보이저 기체 원본: https://science.nasa.gov/image-detail/spacecraft-profile-3/
+Credit: NASA/JPL-Caltech.
+출력: voyager-flight.png
+편집 프롬프트: Use case: background-extraction. Asset: transparent spacecraft game sprite. Voyager spacecraft. Remove ONLY the black background to transparent, including openings between trusses. Preserve the exact dish, metallic bus, golden record, instrument boom and long delicate structures, photographic details and original orientation. Entire spacecraft must fit without cropping, 5% transparent margin. No invented parts, no stars, no text.
+자료창 원본: https://science.nasa.gov/image-detail/pia21737/
+
+인사 녹음: NASA, Voyager Golden Record — Greetings in 55 Languages (1977), 약 4분 25초.
+공식 자료: https://science.nasa.gov/mission/voyager/golden-record-contents/greetings/
+공개 보존본: https://commons.wikimedia.org/wiki/File:Voyager_Golden_Record_-_Greetings_In_55_Languages.mp3
+원본 음원: https://upload.wikimedia.org/wikipedia/commons/7/7a/Voyager_Golden_Record_-_Greetings_In_55_Languages.mp3
+사이트 파일: golden-greetings.mp3. 원본 전체를 사용하며, 게임 내 거리로 재생 음량만 조절한다.
+음악 트랙은 사용하지 않는다. 우주 공간의 소리 전파가 아닌 조종석 재생 연출이다.
