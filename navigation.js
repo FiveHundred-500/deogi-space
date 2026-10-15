@@ -25,7 +25,7 @@ const FlightView={
   if(this.mode==='map')return;this.remember(dt);if(this.recovery>0)return;
   const bodies=this.bodies(),nearest=bodies.reduce((a,b)=>this.distance(a)-a.radius<this.distance(b)-b.radius?a:b),clearance=this.distance(nearest)-nearest.radius;
   // Time is compressed; the approach limiter keeps detailed manoeuvres controllable.
-  const limit=Math.min(AsteroidBelt.speedLimit(this.cruise),Math.max(.009,clearance*1.2));
+  const limit=Math.min(AsteroidBelt.speedLimit(OuterSpace.cruiseLimit(this.cruise)),Math.max(.009,clearance*1.2));
   const turn=(keys.has('ArrowRight')||keys.has('d')?1:0)-(keys.has('ArrowLeft')||keys.has('a')?1:0),thrust=(keys.has('ArrowUp')||keys.has('w')?1:0)-(keys.has('ArrowDown')||keys.has('s')?1:0);
   this.yaw=this.wrap(this.yaw+turn*dt*1.15);const desired=thrust*limit;this.speed+=(desired-this.speed)*Math.min(1,dt*(thrust?2.4:3.5));
   const nx=ship.x+Math.cos(this.yaw)*this.speed*dt,ny=ship.y+Math.sin(this.yaw)*this.speed*dt;
@@ -35,9 +35,9 @@ const FlightView={
   const heading=this.yaw+(this.speed<0?Math.PI:0),look=Math.max(.018,Math.abs(this.speed)*2.5),threat=hazards.find(b=>this.segmentHit(ship.x,ship.y,ship.x+Math.cos(heading)*look,ship.y+Math.sin(heading)*look,b,b.radius+.006));
   if(threat&&Math.abs(this.speed)>.002){this.warning='⚠ '+bodyName(threat)+' 충돌 주의 · Space / 제동';if(!this.cooldown){this.beep();this.cooldown=2;}}
   else if(Math.hypot(ship.x,ship.y)<.18)this.warning='☀ 태양 근접 · 열 경보 · 반대 방향으로 이동';
-  if(Math.hypot(ship.x,ship.y)>42){const a=Math.atan2(ship.y,ship.x);ship.x=Math.cos(a)*41.9;ship.y=Math.sin(a)*41.9;this.brake();this.notify('탐사 범위 경계 · 태양계 방향으로 돌아가세요',time);}
+  if(Math.hypot(ship.x,ship.y)>OuterSpace.boundary){const a=Math.atan2(ship.y,ship.x);ship.x=Math.cos(a)*(OuterSpace.boundary-.1);ship.y=Math.sin(a)*(OuterSpace.boundary-.1);this.brake();this.notify('오르트 구름 안쪽 · 탐사 한계 도달 · 태양 쪽으로 돌아가세요',time);}
   for(const p of this.bodies())if(this.distance(p)<p.radius+p.zone&&!record(p.id).visited){record(p.id).visited=true;save();this.notify('✦ '+p.name+' 식별 완료 · 관측 신호 확보',time);updateUI();}
-  AsteroidBelt.tick(time);
+  AsteroidBelt.tick(time);OuterSpace.tick(time);
  },
  labels(){const p=current(),q=observationBody,d=this.distance(),time=performance.now();
   $('flightStatus').textContent=paused?'비행 일시정지':this.mode==='map'?'항법 지도 · 정지':q?'관측 구역 · '+bodyName(q):'공전면 자유 비행';
@@ -61,7 +61,7 @@ const FlightView={
    if(p.id===current().id){const r=Math.max(20,size/2+10);ctx.strokeStyle='#9effd499';ctx.setLineDash([5,7]);ctx.strokeRect(x-r,horizon-r,r*2,r*2);ctx.setLineDash([]);ctx.fillStyle='#c0ffe8';ctx.textAlign='center';ctx.font='11px sans-serif';ctx.fillText('목적지 · '+bodyName(p)+' · '+p.d.toFixed(3)+' AU',Math.max(70,Math.min(w-70,x)),horizon+r+19);}
   }
   const p=current(),rel=this.wrap(Math.atan2(p.y-ship.y,p.x-ship.x)-this.yaw);if(Math.abs(rel)>.85){ctx.fillStyle='#a4f2d6';ctx.textAlign=rel<0?'left':'right';ctx.font='12px sans-serif';ctx.fillText((rel<0?'◀ ':'')+'목적지 · '+bodyName(p)+(rel>0?' ▶':''),rel<0?40:w-40,horizon);}
-  AsteroidBelt.draw(ctx,w,h);
+  AsteroidBelt.draw(ctx,w,h);OuterSpace.draw(ctx,w,h,time);
   // Fixed horizon and heading ticks make coplanar turns easy to read.
   ctx.strokeStyle='#9bc5ca55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w/2-17,horizon);ctx.lineTo(w/2-6,horizon);ctx.moveTo(w/2+6,horizon);ctx.lineTo(w/2+17,horizon);ctx.moveTo(w/2,horizon-10);ctx.lineTo(w/2,horizon+10);ctx.stroke();
   ctx.fillStyle='#111e2d';ctx.strokeStyle='#486171';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(25,0);ctx.lineTo(35,h-190);ctx.lineTo(75,h-157);ctx.lineTo(w-75,h-157);ctx.lineTo(w-35,h-190);ctx.lineTo(w-25,0);ctx.lineTo(w,0);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();ctx.stroke();

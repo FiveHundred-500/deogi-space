@@ -4,7 +4,7 @@ const PhotoLibrary={
  images:new Map(),
  get(key){return typeof PHOTOS!=='undefined'?PHOTOS[key]:null;},
  image(key){if(!this.images.has(key)){const meta=this.get(key);if(!meta)return null;const img=new Image();img.src=meta.src;this.images.set(key,img);}return this.images.get(key);},
- markup(key,name,cls='body-photo'){const a=this.get(key);return a?`<img class="${cls}" src="${a.src}" alt="${name} 실제 관측 사진" loading="lazy">`:`<span class="photo-unavailable">${name} 사진 준비 중</span>`;},
+ markup(key,name,cls='body-photo'){const a=this.get(key);return a?`<img class="${cls}" src="${a.src}" alt="${a.alt||name+' 실제 관측 사진'}" loading="lazy">`:`<span class="photo-unavailable">${name} 사진 준비 중</span>`;},
  measured(key,name){const a=this.get(key);if(!a)return '';const size=180/(a.bodyFraction||1),left=90-(a.centerX||.5)*size,top=90-(a.centerY||.5)*size;return `<img class="measured-photo" src="${a.src}" alt="${name} 실제 관측 사진" style="width:${size}px;height:${size}px;left:${left}px;top:${top}px">`;},
  compared(key,name,diameter){const a=this.get(key);if(!a)return '';const size=diameter/(a.bodyFraction||1),left=diameter/2-(a.centerX||.5)*size,top=diameter/2-(a.centerY||.5)*size;return `<div class="compare-disc" style="width:${diameter}px;height:${diameter}px"><img src="${a.src}" alt="${name} 본체 사진" style="position:absolute;max-width:none;width:${size}px;height:${size}px;left:${left}px;top:${top}px"></div>`;},
  credit(key){const a=this.get(key);return a?`<a href="${a.source}" target="_blank" rel="noopener">사진: ${esc(a.credit)}</a>${a.note?` · ${esc(a.note)}`:''}`:'';},
