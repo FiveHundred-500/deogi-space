@@ -2,27 +2,40 @@
 // Deterministic world-space scenery: neighbouring cells persist as the ship moves.
 // Display sizes/density are exaggerated. These particles are not collision walls.
 const DeepSpaceScenery={
+ // Display margin beyond Neptune; scientific extent stays in the region archive.
+ kuiper:{min:32,max:50,fade:3},
+ beltOpacity(r){const k=this.kuiper;return AsteroidBelt.smooth((r-k.min)/k.fade)*AsteroidBelt.smooth((k.max-r)/k.fade);},
+ approachOpacity(r){return AsteroidBelt.smooth((r-(this.kuiper.min-1))/3);},
  hash(x,y,z,n){const v=Math.sin(x*127.1+y*311.7+z*74.7+n*19.19)*43758.5453;return v-Math.floor(v);},
  particles(kind){
   const oort=kind==='oort',cell=oort?32:2.4,reach=oort?160:12,out=[],cx=Math.floor(ship.x/cell),cy=Math.floor(ship.y/cell),span=Math.ceil(reach/cell);
   for(let ix=cx-span;ix<=cx+span;ix++)for(let iy=cy-span;iy<=cy+span;iy++)for(let iz=oort?-3:0;iz<=(oort?3:2);iz++){
    const hash=n=>this.hash(ix,iy,iz,n),x=(ix+hash(1))*cell,y=(iy+hash(2))*cell,z=oort?(iz+hash(3))*cell:(hash(3)-.5)*.8,r=Math.hypot(x,y,z);
-   if(oort?(r<2000||r>2360):(r<30||r>50))continue;
+   if(oort?(r<2000||r>2360):(r<this.kuiper.min||r>this.kuiper.max))continue;
    const dx=x-ship.x,dy=y-ship.y,d=Math.hypot(dx,dy,z);if(d>reach||d<cell*.08)continue;
    const forward=dx*Math.cos(FlightView.yaw)+dy*Math.sin(FlightView.yaw),side=-dx*Math.sin(FlightView.yaw)+dy*Math.cos(FlightView.yaw);
    if(forward<=0||Math.abs(side)>forward*1.1)continue;
-   const alpha=(1-AsteroidBelt.smooth((d/reach-.5)/.5))*AsteroidBelt.smooth(d/(cell*.6));
+   const alpha=(1-AsteroidBelt.smooth((d/reach-.5)/.5))*AsteroidBelt.smooth(d/(cell*.6))*(oort?1:this.beltOpacity(r));
    out.push({forward,side,z,d,alpha,radius:cell*(.012+hash(4)*.035),angle:hash(5)*6.28,shape:Array.from({length:7},(_,i)=>.7+hash(8+i)*.3)});
   }
   return out.sort((a,b)=>b.d-a.d);
  },
+ occluders(w,h){
+  const focal=w*.72;return FlightView.bodies().filter(p=>!p.artificial).map(p=>{
+   const d=FlightView.distance(p),rel=FlightView.wrap(Math.atan2(p.y-ship.y,p.x-ship.x)-FlightView.yaw);
+   return {d,rel,x:w/2+Math.tan(rel)*focal,y:h*.44,r:Math.min(h*.58,Math.max(p.id==='sun'?8:2,2*p.radius/Math.max(d,.001)*focal))/2};
+  }).filter(p=>Math.abs(p.rel)<=1.1&&p.r>1);
+ },
  draw(ctx,w,h){
-  const r=Math.hypot(ship.x,ship.y),oort=r>1820;if(!oort&&(r<18||r>62))return;
-  const focal=w*.72,horizon=h*.44;ctx.save();ctx.beginPath();ctx.rect(35,70,w-70,Math.max(1,h-260));ctx.clip();
+  const r=Math.hypot(ship.x,ship.y),oort=r>1820,approach=oort?1:this.approachOpacity(r);if(!oort&&(approach===0||r>62))return;
+  const focal=w*.72,horizon=h*.44,occluders=this.occluders(w,h);ctx.save();ctx.beginPath();ctx.rect(35,70,w-70,Math.max(1,h-260));ctx.clip();
   for(const p of this.particles(oort?'oort':'kuiper')){
    const x=w/2+p.side/p.forward*focal,y=horizon-p.z/p.forward*focal,size=Math.min(38,Math.max(1,p.radius/p.forward*focal));
    if(x<-size||x>w+size||y<-size||y>h-170+size)continue;
-   ctx.globalAlpha=p.alpha*.86;ctx.save();ctx.translate(x,y);ctx.rotate(p.angle);
+   ctx.save();
+   // Clip each nearer body separately, so overlapping silhouettes stay opaque.
+   for(const body of occluders){if(body.d>=p.d||Math.hypot(x-body.x,y-body.y)>body.r+size)continue;ctx.beginPath();ctx.rect(0,0,w,h);ctx.moveTo(body.x+body.r,body.y);ctx.arc(body.x,body.y,body.r,0,Math.PI*2);ctx.clip('evenodd');}
+   ctx.globalAlpha=p.alpha*.86*approach;ctx.translate(x,y);ctx.rotate(p.angle);
    const shade=ctx.createLinearGradient(-size,-size,size,size);shade.addColorStop(0,oort?'#ddd5ed':'#d1edf1');shade.addColorStop(.4,oort?'#827b9b':'#789da9');shade.addColorStop(1,'#263543');ctx.fillStyle=shade;ctx.strokeStyle=oort?'#e0d4fc88':'#b7e4ed88';ctx.lineWidth=.7;ctx.beginPath();
    for(let j=0;j<7;j++){const a=j/7*Math.PI*2,px=Math.cos(a)*size*p.shape[j],py=Math.sin(a)*size*p.shape[j]*.75;j?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.closePath();ctx.fill();if(size>3)ctx.stroke();
    if(size>7){ctx.strokeStyle='#e2f4ff33';ctx.beginPath();ctx.moveTo(-size*.5,-size*.3);ctx.lineTo(size*.1,size*.2);ctx.lineTo(size*.6,-size*.2);ctx.stroke();}ctx.restore();
