@@ -43,12 +43,13 @@ const PlanetDescent={
   for(const [key,ground,air] of [['ArrowUp','전진','상승'],['ArrowDown','후진','하강']]){const b=this.panel.querySelector('[data-probe="'+key+'"]');b.setAttribute('aria-label','탐사정 '+(this.cloud?air:ground));b.textContent=(key==='ArrowUp'?'↑':'↓')+' '+(this.cloud?air:ground);}
   $('descentSource').href='https://science.nasa.gov/'+p.id+'/facts/';$('descentTransitionText').textContent='탐사정 분리 · 접근 중';
   $('descentPoints').innerHTML=this.world.sites.map((_,i)=>'<button class="descent-point '+(p.id==='mars'&&i===3?'descent-rover':'')+'" data-site="'+i+'" aria-label="'+(p.id==='mars'&&i===3?'큐리오시티 사진 기록':'관찰 지점 '+(i+1))+'">'+(p.id==='mars'&&i===3?'<img src="assets/curiosity-grounded.png" alt="화성 지면 위의 큐리오시티 탐사차"><span>큐리오시티':'◇ <span>관찰')+'</span></button>').join('');
-  this.points=[...$('descentPoints').children];this.points.forEach((b,i)=>b.onclick=()=>this.inspect(i));this.panel.showModal();this.resize();this.canvas.focus();this.previous=performance.now();this.launchLabel();this.animation=requestAnimationFrame(t=>this.frame(t));return true;
+  this.points=[...$('descentPoints').children];this.points.forEach((b,i)=>{b.onclick=()=>this.inspect(i);this.updateObservationMarker(b,i);});this.panel.showModal();this.resize();this.canvas.focus();this.previous=performance.now();this.launchLabel();this.animation=requestAnimationFrame(t=>this.frame(t));return true;
  },
  leave(){if(!this.active)return;this.active=false;this.scan=null;cancelAnimationFrame(this.animation);this.held.clear();this.verticalSpeed=0;keys.clear();Object.assign(ship,{x:this.saved.x,y:this.saved.y});FlightView.yaw=this.saved.yaw;FlightView.speed=0;paused=this.saved.paused;this.panel.close();updateRange();updateUI();$('space').focus();},
  remember(mode,index=null){this.scanned.add(this.scanKey(mode,index));try{localStorage.setItem('deogi-probe-scans-v1',JSON.stringify([...this.scanned]));}catch{}},
  prepareNote(mode){this.scan=null;this.inspection=true;this.noteMode=mode;$('descentArchive').hidden=true;$('descentScan').hidden=true;$('descentPhoto').hidden=true;$('descentNote').hidden=false;$('descentNoteClose').focus();},
- inspect(i){if(this.phase<1||!this.world.sites[i])return;this.prepareNote('site');this.remember('site',i);this.showScanResult('site',i);},
+ updateObservationMarker(b,i){const observed=this.scanned.has(this.scanKey('site',i)),rover=this.body.id==='mars'&&i===3;b.classList.toggle('observed',observed);b.setAttribute('aria-label',(rover?'큐리오시티 사진 기록':'관찰 지점 '+(i+1))+(observed?' · 관찰 완료 · 다시 보기':''));b.querySelector('span').textContent=observed?'관찰 완료 · 다시 보기':rover?'큐리오시티':'관찰';},
+ inspect(i){if(this.phase<1||!this.world.sites[i])return;this.prepareNote('site');this.remember('site',i);this.updateObservationMarker(this.points[i],i);this.showScanResult('site',i);},
  inspectSurroundings(){if(this.phase<1)return;this.prepareNote('visual');this.remember('visual');this.renderSurroundings();},
  openRecords(){
   if(this.phase<1)return;this.prepareNote('records');$('descentNoteTitle').textContent=this.body.name+' · 관찰 기록';
