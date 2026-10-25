@@ -34,10 +34,5 @@ PHOTOS.eris={
  }
 };
 
-// Pluto's second telescope hotspot opens an optional clue, never a route.
+// Historical context remains an observation fact; travel clues live in the ship archive.
 PLUTO.facts[1]=['행성의 기준을 바꾼 발견','명왕성과 비슷한 크기의 에리스가 발견되면서 무엇을 행성이라고 부를지 논의가 커졌어요. 2006년 국제천문연맹이 정한 기준에서 명왕성은 궤도 주변을 중력적으로 지배하는 천체가 아니어서 왜소행성으로 다시 분류되었어요. 에리스의 발견은 이 변화를 이끈 중요한 계기였어요.'];
-const ErisClue={
- markup(p,index){return p.id==='pluto'&&index===1?'<section class="muted-box" aria-label="외곽 탐사 단서"><b>희미한 반사 신호</b><p>이곳과 다른 방향에서도 작은 얼음 천체의 신호가 감지됩니다. 태양에서 약 68 AU 떨어진 곳입니다.</p><button class="ghost" id="erisBearingBtn" aria-controls="erisBearingResult">신호 방향 확인</button><p id="erisBearingResult" role="status" aria-live="polite"></p><small>조종석의 현재 방향을 맞춰 직접 탐험해 보세요.</small></section>':'';},
- bearing(){const degrees=(Math.atan2(ERIS.y-ship.y,ERIS.x-ship.x)*180/Math.PI+360)%360;return (Math.round(degrees*10)/10)%360;},
- bind(){const button=$('erisBearingBtn');if(button)button.onclick=()=>{$('erisBearingResult').textContent='현재 우주선 위치 기준 · 신호 방향 '+this.bearing().toFixed(1)+'°';};}
-};
