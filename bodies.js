@@ -1,5 +1,5 @@
 'use strict';
-const bodyName=p=>p.secret&&!record(p.id).visited?(p.artificial?'미확인 통신원 '+p.signalCode:p.id==='pluto'?'미확인 천체 02':'미확인 천체 01'):p.name;
+const bodyName=p=>p.secret&&!record(p.id).visited?(p.artificial?'미확인 통신원 '+p.signalCode:'미확인 천체 '+(p.signalCode||(p.id==='pluto'?'02':'01'))):p.name;
 const headingDegrees=angle=>Math.round((angle*180/Math.PI+360)%360)%360;
 const bearing=p=>headingDegrees(Math.atan2(p.y-ship.y,p.x-ship.x));
 // NASA JPL masses rounded for this instrument; kg. Surface summaries: NASA Science.
