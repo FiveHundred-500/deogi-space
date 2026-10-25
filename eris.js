@@ -4,7 +4,7 @@
 const ERIS={
  id:'eris',name:'에리스',en:'ERIS',type:'왜소행성',secret:true,signalCode:'06',
  tagline:'명왕성 너머에서 만난 또 하나의 얼음 세계',
- x:68*Math.cos(.18),y:68*Math.sin(.18),au:68,radius:.012,zone:.45,
+ x:68*Math.cos(140*Math.PI/180),y:68*Math.sin(140*Math.PI/180),au:68,radius:.012,zone:.45,
  diameter:2326,meanDiameter:true,mass:1.66e22,
  tools:['observe','measure','profile'],
  measurementNote:'지름 측정에는 상상도를 자료에 맞춰 보정한 축척 모형을 사용해요. 허블 사진의 빛점 크기는 천체의 실제 지름이 아니에요.',
