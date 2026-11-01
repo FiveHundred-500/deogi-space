@@ -26,8 +26,7 @@ const DeogiTutorial={
   const originalHelp=help;
   help=()=>{originalHelp();const button=document.createElement('button');button.className='primary full';button.textContent='조작 튜토리얼 다시 시작';button.onclick=()=>this.start();$('modalBody').prepend(button);};
   $('helpBtn').onclick=help;
-  let seen=false;try{seen=['completed','skipped'].includes(localStorage.getItem(this.key));}catch{}
-  if(!seen)this.start();
+  // This separate practice course is launched only from Help.
  },
  closeTools(){CockpitUI.returnPanel=null;if($('drawer').open)$('drawer').close();if($('modal').open)$('modal').close();if($('calculator'))$('calculator').hidden=true;$('calculatorBtn').hidden=false;keys.clear();FlightView.speed=0;},
  start(){
