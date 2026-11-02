@@ -66,7 +66,7 @@ const FirstExpedition={
  },
  update(){
   if(!this.active)return;
-  const coach=$('firstCoach'),host=PlanetDescent.active?$('descent'):document.body;if(coach.parentElement!==host)host.append(coach);document.body.classList.toggle('first-probe',PlanetDescent.active);document.body.classList.toggle('first-launch',this.stepId()?.startsWith('probe-')&&!PlanetDescent.active);document.body.classList.toggle('first-map',['map','destination'].includes(this.stepId()));
+  const coach=$('firstCoach'),host=PlanetDescent.active?$('descent'):document.body;if(coach.parentElement!==host)host.append(coach);document.body.classList.toggle('first-probe',PlanetDescent.active);document.body.classList.toggle('first-launch',!!this.stepId()?.startsWith('probe-')&&!PlanetDescent.active);document.body.classList.toggle('first-map',['map','destination'].includes(this.stepId()));
   const calcOpen=!!$('calculator')&&!$('calculator').hidden;
   document.body.classList.toggle('first-tools',$('modal').open||$('drawer').open||calcOpen);
   document.body.classList.toggle('first-flying',this.stepId()==='flight');
