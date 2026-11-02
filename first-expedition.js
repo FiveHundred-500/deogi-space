@@ -14,10 +14,8 @@ const FirstExpedition={
   {id:'probe-surface',title:'땅과 물을 살펴보세요',text:'‘주변 관찰’을 눌러 탐사정이 닿은 곳을 확인하세요. 바퀴가 닿는 땅이 있는지, 주변에는 무엇이 보이는지 살펴보세요.',success:'표면 상태를 확인했어요. 다른 행성에서도 탐사정을 보내 같은 방법으로 비교해 보세요.'},
   {id:'probe-air',title:'대기를 스캔해 보세요',text:'‘대기 스캔’을 누르고 잠시 기다리면 주요 성분이 나와요. 이미 스캔했다면 관찰 기록 → 대기 · 스캔 결과에서 다시 볼 수 있어요.',success:'대기 자료를 확인했어요. 직접 본 모습과 스캔 자료를 함께 기록해 보세요.'},
   {id:'probe-records',title:'관찰 기록을 다시 열어 보세요',text:'‘관찰 기록’을 눌러 방금 살펴본 내용이 남아 있는지 확인하세요. 목록을 누르면 다시 볼 수 있고, 완료한 대기 스캔을 반복할 필요도 없어요.',success:'관찰한 내용을 다시 찾았어요. 이제 우주선으로 돌아가요.'},
-  {id:'probe-return',title:'우주선으로 복귀하세요',text:'화면 위의 ‘우주선으로 복귀’를 누르세요. 탐사정을 보내기 전의 우주선 위치로 돌아와요.',success:'조종석으로 돌아왔어요. 다음은 지구 곁의 미확인 통신 신호를 찾아볼 차례예요.'},
-  {id:'signal',title:'지구 곁의 미확인 신호',text:'창을 닫고 조종석으로 돌아와, 테두리가 빛나는 미확인 통신 신호 버튼을 누르세요. 주변의 인공 천체가 보내는 신호예요.',success:'실제 신호를 목적지로 정했어요. 시선은 자동으로 바뀌지 않아요. 이제 직접 찾아가 보세요.'},
-  {id:'flight',title:'신호 방향으로 직접 비행하세요',text:'← →로 현재 방향을 목적지 방향에 맞춘 뒤 ↑를 눌러 접근하세요. 화면의 화살표 버튼도 사용할 수 있어요. 손을 떼면 천천히 감속해요.',success:'허블 우주망원경을 발견했어요! 이제 가까이 있는 허블의 관측 장비를 열어 보세요.'},
-  {id:'hubble',title:'허블을 직접 관찰해 보세요',tool:'observe',text:'허블 우주망원경 관측 장비 → 관측 망원경을 열어요. 사진 위에서 번호를 찾아 눌러 보세요.',success:'허블의 관측 자료를 확인했어요. 이제 항법지도로 다음에 탐사할 행성을 정해 보세요.'},
+  {id:'probe-return',title:'우주선으로 복귀하세요',text:'화면 위의 ‘우주선으로 복귀’를 누르세요. 탐사정을 보내기 전의 우주선 위치로 돌아와요.',success:'조종석으로 돌아왔어요. 다음은 숨겨진 대상을 찾을 때 쓰는 신호 버튼을 알아봐요.'},
+  {id:'signal',info:true,title:'숨겨진 대상이 궁금하다면?',text:'미확인 신호 버튼을 누르면 숨겨진 대상을 목적지로 정하고 방향을 확인할 수 있어요. 궁금하다면 자유롭게 찾아가 보세요.'},
   {id:'map',title:'항법지도를 열어 보세요',text:'항법 지도 버튼 또는 M 키를 눌러 태양계의 위치를 살펴보세요. 지도에서는 비행이 멈춰요.',success:'항법지도를 열었어요. 다음에는 지도에서 행성을 직접 눌러 목적지를 정해요.'},
   {id:'destination',title:'다음 행성으로 경로를 정하세요',text:'지도 위에서 지구 이외의 행성 점이나 이름을 눌러 보세요. 점이 겹치면 나타나는 목록에서 골라요. 휠 또는 ＋·−로 확대·축소하고, 드래그로 지도를 옮길 수 있어요.',success:'새 목적지를 정했어요. 지도에 나타난 항로와 목적지 이름을 확인하세요. 우주선은 아직 이동하지 않았어요.'},
   {id:'cockpit',title:'1인칭 조종석으로 돌아오세요',text:'1인칭 조종석 버튼을 누르세요. 목적지 방향을 확인하고 직접 회전·추진해서 다음 행성으로 출발해요.',success:'탐사 준비가 됐어요! 다른 행성에서도 질량·지름·중력을 확인하고 탐사정으로 주변을 살펴보세요. 목적지와 현재 관측 대상은 다를 수 있어요.'}
@@ -30,18 +28,16 @@ const FirstExpedition={
   new ResizeObserver(()=>document.body.style.setProperty('--first-coach-height',Math.ceil(panel.getBoundingClientRect().height)+'px')).observe(panel);
   const track=e=>{if(!this.active||this.stepId()!=='measure')return;if(['leftMarker','leftRange'].includes(e.target.id))this.touched.add('left');if(['rightMarker','rightRange'].includes(e.target.id))this.touched.add('right');};
   for(const type of ['pointerdown','input','keydown'])document.addEventListener(type,track);
-  // Keep the actual Hubble signal discoverable among nearby signals during this journey.
+  // Only a real map selection completes the navigation practice.
   const selectOnMap=MapInput.select;
   MapInput.select=function(...args){const result=selectOnMap.apply(this,args),guide=FirstExpedition;if(guide.active&&guide.stepId()==='destination'&&FlightView.mode==='map'){const accept=()=>{const p=current();if(PLANETS.includes(p)&&p!==PLANETS[2])guide.mapChoice=p;};const menu=$('mapPicker');if(menu)menu.addEventListener('click',accept);else if(this.candidates(...args).length===1)accept();}return result;};
-  const updateSignals=EncounterUI.update;
-  EncounterUI.update=function(){updateSignals.call(this);if(!FirstExpedition.active||!['signal','flight'].includes(FirstExpedition.stepId()))return;if(current()===HUBBLE){this.signal=null;$('signalBtn').hidden=true;return;}if(FlightView.mode!=='cockpit'||FlightView.distance(HUBBLE)>=HUBBLE.signalRange)return;this.signal=HUBBLE;const button=$('signalBtn');button.hidden=false;button.textContent='◌ '+(record(HUBBLE.id).visited?HUBBLE.name:'미확인 통신 신호')+' · '+bearing(HUBBLE)+'° · 목적지 선택';};
   const manual=help;help=()=>{if(this.active)this.finish('skipped');manual();const button=document.createElement('button');button.className='ghost full';button.textContent='지구 첫 탐사 안내 다시 시작 · 질량·탐사정·항법지도';button.onclick=()=>{this.closePanels();this.start();};$('modalBody').prepend(button);};$('helpBtn').onclick=help;
   let seen=false;try{seen=['completed','skipped'].includes(localStorage.getItem(this.key));}catch{}
   if(!seen)this.start();
  },
  start(){
   if(this.active)return;this.active=true;this.index=-1;this.done=false;this.mapChoice=null;this.touched=new Set();document.body.classList.add('first-guide');$('firstCoach').hidden=false;
-  $('firstCount').textContent='첫 탐사 · 지구에서 출발';$('firstTitle').textContent='지구부터 함께 탐사해 볼까요?';$('firstText').textContent='지구를 관측·측정하고 탐사정으로 주변을 살펴봐요. 지구 곁의 신호를 찾은 뒤, 항법지도로 다음 행성을 정해요.';$('firstHint').textContent='실제 조종석과 관측 장비를 사용해요. 익숙하다면 안내를 건너뛰어도 좋아요.';$('firstStepSkip').hidden=true;$('firstNext').textContent='지구 탐사 시작';$('firstNext').disabled=false;
+  $('firstCount').textContent='첫 탐사 · 지구에서 출발';$('firstTitle').textContent='지구부터 함께 탐사해 볼까요?';$('firstText').textContent='지구를 관측·측정하고 탐사정으로 주변을 살펴봐요. 신호 버튼의 역할을 알아본 뒤, 항법지도로 다음 행성을 정해요.';$('firstHint').textContent='실제 조종석과 관측 장비를 사용해요. 익숙하다면 안내를 건너뛰어도 좋아요.';$('firstStepSkip').hidden=true;$('firstNext').textContent='지구 탐사 시작';$('firstNext').disabled=false;
   $('firstBearing').textContent='';this.update();this.timer=setInterval(()=>this.update(),160);
  },
  closePanels(){CockpitUI.returnPanel=null;if($('modal').open)$('modal').close();CockpitUI.closePanel(false);if($('calculator')&&!$('calculator').hidden)Calculator.close();},
@@ -53,7 +49,7 @@ const FirstExpedition={
   if(PlanetDescent.active){if(next.id.startsWith('probe-'))PlanetDescent.closeNote();else PlanetDescent.leave();}
   if(this.steps[this.index]?.tool&&next.tool){if($('modal').open)$('modal').close();}else this.closePanels();
   this.index++;this.done=false;this.probeOrigin=null;this.touched=new Set();Calculator.loadHistory();this.lastCalculation=Calculator.history.at(-1);
-  const step=this.steps[this.index];$('firstCount').textContent=(this.index+1)+' / '+this.steps.length+' · 첫 탐사';$('firstTitle').textContent=step.title;$('firstText').textContent=step.text;$('firstNext').textContent=this.index===this.steps.length-1?'자유 탐사 시작':'다음';$('firstNext').disabled=true;$('firstStepSkip').hidden=false;$('firstBearing').textContent='';this.update();
+  const step=this.steps[this.index];$('firstCount').textContent=(this.index+1)+' / '+this.steps.length+' · 첫 탐사';$('firstTitle').textContent=step.title;$('firstText').textContent=step.text;$('firstNext').textContent=step.info?'확인':this.index===this.steps.length-1?'자유 탐사 시작':'다음';$('firstNext').disabled=true;$('firstStepSkip').hidden=!!step.info;$('firstBearing').textContent='';this.update();
  },
  highlight(selector){const el=selector?document.querySelector(selector):null;if(this.highlighted===el)return;this.highlighted?.classList.remove('first-highlight');this.highlighted=el;el?.classList.add('first-highlight');},
  hint(text){if($('firstHint').textContent!==text)$('firstHint').textContent=text;},
@@ -69,14 +65,18 @@ const FirstExpedition={
   const coach=$('firstCoach'),host=PlanetDescent.active?$('descent'):document.body;if(coach.parentElement!==host)host.append(coach);document.body.classList.toggle('first-probe',PlanetDescent.active);document.body.classList.toggle('first-launch',!!this.stepId()?.startsWith('probe-')&&!PlanetDescent.active);document.body.classList.toggle('first-map',['map','destination'].includes(this.stepId()));
   const calcOpen=!!$('calculator')&&!$('calculator').hidden;
   document.body.classList.toggle('first-tools',$('modal').open||$('drawer').open||calcOpen);
-  document.body.classList.toggle('first-flying',this.stepId()==='flight');
   if(this.index<0)return;
-  const step=this.steps[this.index],body=this.stepId()==='hubble'?HUBBLE:PLANETS[2];let ok=false,hint='';
+  const step=this.steps[this.index],body=PLANETS[2];let ok=false,hint='';
+  if(step.info){
+   const visible=FlightView.mode==='cockpit'&&!$('modal').open&&!$('drawer').open&&!PlanetDescent.active&&!$('signalBtn').hidden;
+   this.highlight(visible?'#signalBtn':null);this.hint(visible?'빛나는 신호 버튼을 기억해 두세요. 지금은 확인을 누르고 다음 행성을 정해요.':'탐사 중 신호 버튼이 나타나면 사용할 수 있어요. 지금은 확인을 누르고 다음 행성을 정해요.');
+   this.done=true;$('firstNext').disabled=false;return;
+  }
   if(step.tool){
    if(!this.toolOpen(step.tool,body)){hint=this.guideTool(step,body);}
    else{
     this.highlight(null);
-    if(this.stepId()==='observe'||this.stepId()==='hubble'){ok=!!document.querySelector('#scopeStage .hotspot.done');hint='사진 위를 천천히 탐색해서 번호를 눌러 보세요.';}
+    if(this.stepId()==='observe'){ok=!!document.querySelector('#scopeStage .hotspot.done');hint='사진 위를 천천히 탐색해서 번호를 눌러 보세요.';}
     if(this.stepId()==='measure'){const w=$('measureStage').clientWidth;ok=this.touched.size===2&&Math.abs(+$('leftRange').value*w/100-(w/2-90))<=7&&Math.abs(+$('rightRange').value*w/100-(w/2+90))<=7;hint='양쪽 눈금을 모두 움직여 본체의 양 끝에 맞춰 보세요.';}
     if(this.stepId()==='gravity'){ok=!!document.querySelector('#planetLoads [data-remove]');hint='추를 고르고 저울에 달아 보세요. 눈금 단위는 N이에요.';}
     if(this.stepId()==='mass'){ok=!!document.querySelector('.mass-reading');hint='질량의 숫자와 단위를 확인하세요.';this.highlight('.mass-reading');}
@@ -86,21 +86,6 @@ const FirstExpedition={
   if(this.stepId()==='calculator'){this.highlight(calcOpen?'#calcInput':'#calculatorBtn');ok=Calculator.history.at(-1)!==this.lastCalculation&&Calculator.history.length>0;hint=calcOpen?'식을 입력하고 = 또는 Enter를 누르세요.':'화면의 계산기 버튼을 눌러 보세요.';}
   if(step.id.startsWith('probe-')){({ok,hint}=this.guideProbe(step));}
   if(['map','destination','cockpit'].includes(step.id)){({ok,hint}=this.guideMap(step));}
-  if(this.stepId()==='signal'){
-   ok=current()===HUBBLE;
-   if($('modal').open||$('drawer').open||calcOpen){this.highlight($('modal').open?'#closeModal':$('drawer').open?'#closeDrawer':'#calcClose');hint='창을 닫고 조종석의 신호 버튼을 확인하세요.';}
-   else if(FlightView.mode==='map'){this.highlight('#cockpitView');hint='1인칭 조종석으로 돌아오면 신호 버튼이 보여요.';}
-   else if(FlightView.distance(HUBBLE)<HUBBLE.signalRange){this.highlight('#signalBtn');hint='지구 곁의 통신 신호를 목적지로 정해 보세요. 알려진 대상이면 이름이 표시돼요.';}
-   else{this.highlight('#destinationsBtn');hint='지구 근처로 돌아오면 통신 신호를 다시 찾을 수 있어요.';}
-  }
-  if(this.stepId()==='flight'){
-   ok=observationBody===HUBBLE&&!!record(HUBBLE.id).visited;
-   if(current()!==HUBBLE){this.highlight('#signalBtn');hint='지구 곁의 통신 신호를 목적지로 다시 선택하세요.';}
-   else if(FlightView.mode==='map'){this.highlight('#cockpitView');hint='1인칭 조종석 버튼을 눌러 비행 화면으로 돌아오세요.';}
-   else if($('modal').open||$('drawer').open||calcOpen){this.highlight($('modal').open?'#closeModal':$('drawer').open?'#closeDrawer':'#calcClose');hint='열려 있는 창을 닫고 직접 비행해 보세요.';}
-   else{const delta=FlightView.wrap(Math.atan2(HUBBLE.y-ship.y,HUBBLE.x-ship.x)-FlightView.yaw);this.highlight(Math.abs(delta)<.1?'[data-dir="up"]':delta>0?'[data-dir="right"]':'[data-dir="left"]');hint=Math.abs(delta)<.1?'방향이 맞아요. ↑를 짧게 눌러 접근하고, 이동하며 방향을 다시 확인하세요.':(delta>0?'→':'←')+'로 회전해서 현재 방향을 목적지 방향과 비슷하게 맞추세요.';}
-   $('firstBearing').textContent='현재 '+headingDegrees(FlightView.yaw)+'° · 목적지 '+bearing(HUBBLE)+'° · 남은 거리 '+FlightView.distance(HUBBLE).toFixed(3)+' AU';
-  }
   if(ok)this.done=true;
   if(this.done){this.hint('✓ '+step.success);$('firstNext').disabled=false;this.highlight(null);}else this.hint(hint);
  },
